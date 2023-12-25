@@ -1,0 +1,14 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 100vh; Full height of the viewport */
+}
+
+/* Additional styles for the Paper component to ensure it doesn't stretch */
+.paperStyle {
+    width: 80%; /* or you can specify a width */
+    margin: 10px; /* Optional: for some spacing around the Paper component */
+    display: flex;
+    align-items: center;
+}
