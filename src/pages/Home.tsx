@@ -27,9 +27,9 @@ const Home: React.FC = () => {
     useEffect(() => {
         const fetchThreadsAndComments = async () => {
             try {
+                console.log(`${process.env.REACT_APP_API_URL}/threads`)
                 const response = await fetch(`${process.env.REACT_APP_API_URL}/threads`);
                 const threads: Thread[] = await response.json();
-
                 for (const thread of threads) {
                     const commentResponse = await fetch(`${process.env.REACT_APP_API_URL}/threads/${thread.thread_id}/comments`);
                     thread.comments = await commentResponse.json(); // Attach the comments directly to the thread object
