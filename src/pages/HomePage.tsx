@@ -5,6 +5,7 @@ import { Container, Grid } from "@mui/material";
 import { Thread } from "../types/Thread";
 import ThreadList from "../components/ThreadList";
 import FilterSortControls from "../components/FilterSortControls";
+
 // Define the types for your thread and comment data
 
 const Home: React.FC = () => {
@@ -28,25 +29,16 @@ const Home: React.FC = () => {
 
     // Handler for sort changes
     const handleSortChange = (sortKey: string) => {
-    let sortedThreads = [...threads];
-    
-    if (sortKey === 'time') {
-      sortedThreads.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    } else if (sortKey === 'popularity') {
-      // Sort by some popularity metric - placeholder for your logic
-      sortedThreads.sort((a, b) => /* your popularity comparison logic here */ 0);
-    }
-    // Apply more sort conditions as needed
-    
-    setFilteredThreads(sortedThreads);
-  };
-    // const handleCategorySelect = (category: string) => {
-    //   setSelectedCategory(category);
-    // };
+        let sortedThreads = [...threads];
 
-    const handleCreateNewCategory = () => {
-      // Implement the logic to create a new category here
-      console.log("Creating a new category");
+        if (sortKey === 'time') {
+            sortedThreads.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        } else if (sortKey === 'popularity') {
+            // Sort by some popularity metric - placeholder for your logic
+            sortedThreads.sort((a, b) => /* your popularity comparison logic here */ 0);
+        }
+        // Apply more sort conditions as needed
+        setFilteredThreads(sortedThreads);
     };
     // Load threads from the backend on component mount
     useEffect(() => {
@@ -68,22 +60,9 @@ const Home: React.FC = () => {
         fetchThreadsAndComments();
     }, []);
 
-    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const open = Boolean(anchorEl);
-    const id = open ? 'simple-popover' : undefined;
-    const categories = ["Category 1", "Category 2", "Category 3", "All"];
     return (
         <>
-            <Container maxWidth="lg" style={{paddingTop: "8px"}}>
+            <Container maxWidth="lg" style={{paddingTop: "8px", width: "85%"}}>
                 <Grid container spacing={3} alignItems="center" style={{ height: '100%' }}>
                     <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-start' }}>
                         <FilterSortControls
@@ -93,7 +72,7 @@ const Home: React.FC = () => {
                         />
                     </Grid>
                     <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <CreateThreadBtn to="/edit" label="Create new thread" />
+                        <CreateThreadBtn />
                     </Grid>
                 </Grid>
             </Container>

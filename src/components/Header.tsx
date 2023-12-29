@@ -1,15 +1,10 @@
-import { UserData } from "../types/UserData";
-import React, { useState } from "react";
-import { AppBar, Toolbar, Typography, Button, InputBase } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { AppBar, Toolbar, Typography, Button, InputBase, Avatar, Menu, MenuItem } from "@mui/material";
 import { Search as SearchIcon } from '@mui/icons-material';
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
 import { styled, alpha } from '@mui/material/styles';
-
-type HeaderProps = {
-    handleClickOpen: () => void;
-    userData: UserData | null;
-};
+import { isLoggedIn } from "../utils/CheckLoginState";
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -53,16 +48,21 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-const Header: React.FC<HeaderProps> = ({ handleClickOpen, userData }) => {
+const Header: React.FC = () => {
     const navigate = useNavigate(); // Define useNavigate here
+
+    const [userName, setUserName] = useState('Guest');
 
     // Define a function to handle navigation to home
     const handleNavigateHome = () => {
         navigate("/");
     };
 
-    const [searchTerm, setSearchTerm] = useState<string>('');
+    const handleLogin = () => {
+        navigate("/login");
+    }
 
+    const [searchTerm, setSearchTerm] = useState<string>('');
     // Function to handle the change in the input field
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
@@ -75,13 +75,67 @@ const Header: React.FC<HeaderProps> = ({ handleClickOpen, userData }) => {
         console.log('Search submitted for: ', searchTerm);
         // You might want to call an API or update some state with the searchTerm here
     };
+
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+    const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleViewAccount = () => {
+        // Logic to view account details
+        handleClose();
+        navigate("/user");
+    };
+
+    const handleLogoutClick = () => {
+        // Your existing handleLogout logic
+        handleClose();
+        localStorage.removeItem("userData");
+        localStorage.removeItem("token");
+    };
+
+    useEffect(() => {
+        // Function to update userName from localStorage
+        const updateUserName = () => {
+            const userDataJSON = localStorage.getItem('userData');
+            if (userDataJSON) {
+                const userData = JSON.parse(userDataJSON);
+                setUserName(userData.userName || 'Guest');
+            } else {
+                setUserName('Guest'); // Reset to 'Guest' if no userData
+            }
+        };
+
+        // Call updateUserName to set the initial userName
+        updateUserName();
+
+        // Optional: Set up an event listener for localStorage changes
+        // This can be useful if you expect userData to change while the header is mounted
+        const handleStorageChange = (event: StorageEvent) => {
+            if (event.key === 'userData') {
+                updateUserName();
+            }
+        };
+        window.addEventListener('storage', handleStorageChange);
+
+        // Cleanup the event listener on component unmount
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
+
     return (
         <AppBar position="static">
             <Toolbar style={{ justifyContent: 'space-between' }}>
                 <Button color="inherit" onClick={handleNavigateHome}>
                     <Typography variant="h6">Web Forum</Typography>
                 </Button>
-                <div style={{display: "flex"}}>
+                <div style={{ display: "flex", alignItems: 'center', gap: '10px' }}>
                     <Search onSubmit={handleSubmit}>
                         <SearchIconWrapper>
                             <SearchIcon />
@@ -93,12 +147,29 @@ const Header: React.FC<HeaderProps> = ({ handleClickOpen, userData }) => {
                             onChange={handleInputChange}
                         />
                     </Search>
-                    {!userData ? (
-                        <Button color="inherit" onClick={handleClickOpen}>
+                    {!isLoggedIn() ? (
+                        <Button color="inherit" onClick={handleLogin}>
                             Login
                         </Button>
                     ) : (
-                        <Button color="inherit">{userData.userName}</Button>
+                        <div>
+                            <Avatar
+                                onClick={handleAvatarClick}
+                                style={{ cursor: 'pointer' }}
+                                src="URL_TO_USER_IMAGE" // Replace with your image path
+                                alt={userName}
+                            />
+                            <Menu
+                                id="account-menu"
+                                anchorEl={anchorEl}
+                                keepMounted
+                                open={Boolean(anchorEl)}
+                                onClose={handleClose}
+                            >
+                                <MenuItem onClick={handleViewAccount}>View Account</MenuItem>
+                                <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
+                            </Menu>
+                        </div>
                     )}
                 </div>
             </Toolbar>

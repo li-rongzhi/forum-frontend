@@ -3,22 +3,25 @@ import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 
-type CreateThreadBtnProps = {
-    to: string; // The path to navigate to when the button is clicked
-    label: string; // The text to display on the button
-};
-
-const CreateThreadBtn: React.FC<CreateThreadBtnProps> = ({ to, label }) => {
+const CreateThreadBtn: React.FC = () => {
     const navigate = useNavigate();
 
     const handleNavigation = () => {
-        navigate(to);
+        navigate("/edit");
     };
 
     return (
-        <Button variant="contained" color="primary" onClick={handleNavigation}>
+        <Button
+            variant="contained"
+            color="primary"
+            onClick={handleNavigation}
+            style={{
+                marginRight: '15px',
+                borderRadius: '20px', // Adjust as needed for desired roundness
+                padding: '6px 12px', // Adjust padding to control width and height
+            }}>
             <AddIcon></AddIcon>
-            {label}
+            New Thread
         </Button>
     );
 };

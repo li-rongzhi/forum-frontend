@@ -1,14 +1,16 @@
-import Header from "./components/Header";
-import Home from "./pages/Home";
-import CreateThreadPage from "./pages/CreateThread";
-import Popup from "./components/Popup";
-import { LoginResponse } from "./types/LoginResponse";
-import { UserData } from "./types/UserData";
-import React, { useState } from "react";
+import Home from "./pages/HomePage";
+import CreateThreadPage from "./pages/CreateThreadPage";
+import React from "react";
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { blue, orange } from "@mui/material/colors";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import Header from "./components/Header";
+import AccountPage from "./pages/AccountInfoPage";
+import ThreadDetailPage from "./pages/ThreadDetailPage";
+import Footer from "./components/Footer";
 
 const theme = createTheme({
     palette: {
@@ -18,37 +20,21 @@ const theme = createTheme({
 });
 
 const App: React.FC = () => {
-    const [open, setOpen] = useState<boolean>(false);
-    const [token, setToken] = useState<string>("");
-    // const [ifLogin, setIfLogin] = useState<boolean>(false);
-    const [userData, setUserData] = useState<UserData | null>(null);
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-        console.log(token);
-    };
-
-    const handleLoginSuccess = (response: LoginResponse) => {
-        const token = response.token;
-        setToken(token);
-        setUserData(response.user);
-    };
     return (
         <div className="App">
             <ThemeProvider theme={theme}>
                 <BrowserRouter>
-                    <Header handleClickOpen={handleClickOpen} userData={userData} />
-                    {/* <LoginPopup open={open} handleClose={handleClose} onLoginSuccess={handleLoginSuccess} /> */}
-                    <Popup open={open} handleClose={handleClose} onLoginSuccess={handleLoginSuccess} />
-                    {/* <SignupPopup open={signupOpen} handleClose={() => setSignupOpen(false)} onSignupSuccess={handleSignupSuccess} /> */}
+                    <Header />
                     <Routes>
                         <Route path="/" element={<Home />} />
-                        <Route path="/edit" element={<CreateThreadPage token={token} />} />
+                        <Route path="/edit" element={<CreateThreadPage />} />
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/signup" element={<SignupPage />} />
+                        <Route path="/user" element={<AccountPage />} />
+                        <Route path="/thread/:threadId" element={<ThreadDetailPage />} />
                     </Routes>
+                    <Footer />
                 </BrowserRouter>
             </ThemeProvider>
         </div>
