@@ -1,28 +1,53 @@
 // import SearchBar from "../components/SearchBar";
 import CreateThreadBtn from "../components/CreateThreadBtn";
 import React, { useState, useEffect } from "react";
-import { Typography, List, ListItem, ListItemText, Divider } from "@mui/material";
-
+import { Container, Grid } from "@mui/material";
+import { Thread } from "../types/Thread";
+import ThreadList from "../components/ThreadList";
+import FilterSortControls from "../components/FilterSortControls";
 // Define the types for your thread and comment data
-type Comment = {
-    comment_id: number;
-    thread_id: number;
-    user_id: number;
-    content: string;
-    created_at: string;
-};
-
-type Thread = {
-    thread_id: number;
-    title: string;
-    content: string;
-    user_id: number;
-    created_at: string;
-    comments: Comment[];
-};
 
 const Home: React.FC = () => {
     const [threads, setThreads] = useState<Thread[]>([]);
+    const [filteredThreads, setFilteredThreads] = useState<Thread[]>(threads);
+
+    // Categories for your forum - this could be dynamic if fetched from an API
+    const all_categories = ['General', 'Support', 'Feedback', 'Announcements'];
+
+    // Handler for category changes
+    const handleCategoryChange = (category: string) => {
+    //     if (category) {
+    //     // Apply category filter
+    //     setFilteredThreads(threads.filter(thread => thread.category === category));
+    // } else {
+    //     // If no category is selected, reset to show all threads
+    //     setFilteredThreads(threads);
+    // }
+        setFilteredThreads(threads);
+    };
+
+    // Handler for sort changes
+    const handleSortChange = (sortKey: string) => {
+    let sortedThreads = [...threads];
+    
+    if (sortKey === 'time') {
+      sortedThreads.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    } else if (sortKey === 'popularity') {
+      // Sort by some popularity metric - placeholder for your logic
+      sortedThreads.sort((a, b) => /* your popularity comparison logic here */ 0);
+    }
+    // Apply more sort conditions as needed
+    
+    setFilteredThreads(sortedThreads);
+  };
+    // const handleCategorySelect = (category: string) => {
+    //   setSelectedCategory(category);
+    // };
+
+    const handleCreateNewCategory = () => {
+      // Implement the logic to create a new category here
+      console.log("Creating a new category");
+    };
     // Load threads from the backend on component mount
     useEffect(() => {
         const fetchThreadsAndComments = async () => {
@@ -43,33 +68,36 @@ const Home: React.FC = () => {
         fetchThreadsAndComments();
     }, []);
 
+    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+    const categories = ["Category 1", "Category 2", "Category 3", "All"];
     return (
         <>
-            {/* <SearchBar /> */}
-            <CreateThreadBtn to="/edit" label="Create new thread" />
-            <List style={{ margin: 20 }}>
-                {threads.map((thread) => (
-                    <React.Fragment key={thread.thread_id}>
-                        <ListItem alignItems="flex-start">
-                            <ListItemText primary={thread.title} secondary={thread.content} />
-                            <Typography variant="body2" color="textSecondary">
-                                Posted by User {thread.user_id} on {new Date(thread.created_at).toLocaleString()}
-                            </Typography>
-                        </ListItem>
-                        {/* Comments for the thread */}
-                        {thread.comments && (
-                            <List component="div" disablePadding>
-                                {thread.comments.map((comment) => (
-                                    <ListItem key={comment.comment_id} alignItems="flex-start">
-                                        <ListItemText secondary={`${comment.content} (User ${comment.user_id})`} />
-                                    </ListItem>
-                                ))}
-                            </List>
-                        )}
-                        <Divider component="li" />
-                    </React.Fragment>
-                ))}
-            </List>
+            <Container maxWidth="lg" style={{paddingTop: "8px"}}>
+                <Grid container spacing={3} alignItems="center" style={{ height: '100%' }}>
+                    <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                        <FilterSortControls
+                            categories={all_categories}
+                            onCategoryChange={handleCategoryChange}
+                            onSortChange={handleSortChange}
+                        />
+                    </Grid>
+                    <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <CreateThreadBtn to="/edit" label="Create new thread" />
+                    </Grid>
+                </Grid>
+            </Container>
+            <ThreadList threads={threads} />
         </>
     );
 };

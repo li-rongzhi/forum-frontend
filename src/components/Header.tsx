@@ -1,16 +1,57 @@
-// import SearchBar from "./SearchBar";
 import { UserData } from "../types/UserData";
 import React, { useState } from "react";
-import { AppBar, Toolbar, Typography, Button, IconButton, MenuItem, Menu, InputBase, Popover, createTheme } from "@mui/material";
-import { Search as SearchIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, Button, InputBase } from "@mui/material";
+import { Search as SearchIcon } from '@mui/icons-material';
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
-import { blue } from "@mui/material/colors";
-// import theme from "../App"
+import { styled, alpha } from '@mui/material/styles';
+
 type HeaderProps = {
     handleClickOpen: () => void;
     userData: UserData | null;
 };
+
+const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(1),
+      width: 'auto',
+    },
+  }));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    width: '100%',
+    '& .MuiInputBase-input': {
+      padding: theme.spacing(1, 1, 1, 0),
+      // vertical padding + font size from searchIcon
+      paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+      transition: theme.transitions.create('width'),
+      [theme.breakpoints.up('sm')]: {
+        width: '12ch',
+        '&:focus': {
+          width: '20ch',
+        },
+      },
+    },
+}));
 
 const Header: React.FC<HeaderProps> = ({ handleClickOpen, userData }) => {
     const navigate = useNavigate(); // Define useNavigate here
@@ -20,73 +61,38 @@ const Header: React.FC<HeaderProps> = ({ handleClickOpen, userData }) => {
         navigate("/");
     };
 
-    const [anchorElSearch, setAnchorElSearch] = useState<null | HTMLElement>(null);
-    const [anchorElCategory, setAnchorElCategory] = useState<null | HTMLElement>(null);
+    const [searchTerm, setSearchTerm] = useState<string>('');
 
-    const handleSearchClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorElSearch(event.currentTarget);
+    // Function to handle the change in the input field
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
     };
 
-    const handleSearchClose = () => {
-        setAnchorElSearch(null);
+    // Function to handle the submission of the search
+    const handleSubmit = (event: React.FormEvent<HTMLDivElement>) => {
+        event.preventDefault();  // Prevent the default form submit action
+        // Implement what should happen when search is submitted
+        console.log('Search submitted for: ', searchTerm);
+        // You might want to call an API or update some state with the searchTerm here
     };
-
-    const handleCategoryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorElCategory(event.currentTarget);
-    };
-
-    const handleCategoryClose = () => {
-        setAnchorElCategory(null);
-    };
-
     return (
         <AppBar position="static">
             <Toolbar style={{ justifyContent: 'space-between' }}>
                 <Button color="inherit" onClick={handleNavigateHome}>
                     <Typography variant="h6">Web Forum</Typography>
                 </Button>
-                <div>
-                    <IconButton color="inherit" onClick={handleSearchClick}>
-                        <SearchIcon />
-                    </IconButton>
-                    <Popover
-                        id="search-menu"
-                        open={Boolean(anchorElSearch)}
-                        anchorEl={anchorElSearch}
-                        onClose={handleSearchClose}
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'right',
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                    >
-                        <div style={{ padding: '5px', width: '50vh' }}>
-                            <InputBase
-                                placeholder="Search…"
-                                inputProps={{ 'aria-label': 'search' }}
-                                style={{ border: `1px solid ${blue[500]}`, width: "100%", padding: "5px", borderRadius: "10px" }}
-                            />
-                        </div>
-                    </Popover>
-
-                    <IconButton color="inherit" onClick={handleCategoryClick}>
-                        <MoreVertIcon />
-                    </IconButton>
-                    <Menu
-                        id="category-menu"
-                        anchorEl={anchorElCategory}
-                        keepMounted
-                        open={Boolean(anchorElCategory)}
-                        onClose={handleCategoryClose}
-                    >
-                        {/* Populate with your categories */}
-                        <MenuItem onClick={handleCategoryClose}>Category 1</MenuItem>
-                        <MenuItem onClick={handleCategoryClose}>Category 2</MenuItem>
-                        {/* ... other categories ... */}
-                    </Menu>
+                <div style={{display: "flex"}}>
+                    <Search onSubmit={handleSubmit}>
+                        <SearchIconWrapper>
+                            <SearchIcon />
+                        </SearchIconWrapper>
+                        <StyledInputBase
+                            placeholder="Search…"
+                            inputProps={{ 'aria-label': 'search' }}
+                            value={searchTerm}
+                            onChange={handleInputChange}
+                        />
+                    </Search>
                     {!userData ? (
                         <Button color="inherit" onClick={handleClickOpen}>
                             Login
