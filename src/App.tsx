@@ -11,6 +11,7 @@ import Header from "./components/Header";
 import AccountPage from "./pages/AccountInfoPage";
 import ThreadDetailPage from "./pages/ThreadDetailPage";
 import Footer from "./components/Footer";
+import { Box, CssBaseline } from "@mui/material";
 
 const theme = createTheme({
     palette: {
@@ -22,22 +23,31 @@ const theme = createTheme({
 const App: React.FC = () => {
 
     return (
-        <div className="App">
-            <ThemeProvider theme={theme}>
-                <BrowserRouter>
-                    <Header />
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/edit" element={<CreateThreadPage />} />
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/signup" element={<SignupPage />} />
-                        <Route path="/user" element={<AccountPage />} />
-                        <Route path="/thread/:threadId" element={<ThreadDetailPage />} />
-                    </Routes>
-                    <Footer />
-                </BrowserRouter>
-            </ThemeProvider>
-        </div>
+        <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100vh', // Take at least full viewport height
+          }}
+        >
+          <Header />
+          <Box component="main" sx={{ flex: 1 }}> {/* This Box wraps the Routes and allows the content to grow */}
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/edit" element={<CreateThreadPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/user" element={<AccountPage />} />
+              <Route path="/thread/:threadId" element={<ThreadDetailPage />} />
+            </Routes>
+          </Box>
+          <Footer />
+        </Box>
+      </BrowserRouter>
+    </ThemeProvider>
     );
 };
 

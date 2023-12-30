@@ -1,6 +1,3 @@
-import * as React from 'react';
-import CssBaseline from '@mui/material/CssBaseline';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
@@ -21,22 +18,33 @@ function Copyright() {
 
 export default function Footer() {
   return (
+    <Box
+      component="footer"
+      sx={{
+        py: 3,
+        px: 2,
+        mt: 'auto',
+        marginTop: '10px',
+        backgroundColor: (theme) =>
+          theme.palette.mode === 'light'
+            ? theme.palette.grey[200]
+            : theme.palette.grey[800],
+      }}
+    >
+      <Container maxWidth="sm">
+        {/* Wrap the content in a Box with flex display to center it */}
         <Box
-          component="footer"
           sx={{
-            py: 3,
-            px: 2,
-            mt: 'auto',
-            bottom: '0',
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[200]
-                : theme.palette.grey[800],
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
           }}
         >
-          <Container maxWidth="sm">
-            <Copyright />
-          </Container>
+          <Copyright />
         </Box>
+      </Container>
+    </Box>
   );
 }

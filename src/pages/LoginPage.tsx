@@ -15,8 +15,16 @@ const LoginPage: React.FC = () => {
     const [password, setPassword] = useState<string>("");
     const [error, setError] = useState<string>("");
 
+    const handleUsernameChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        setUsername(event.target.value);
+    };
+
+    const handlePasswordChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        setPassword(event.target.value);
+    };
     const navigate = useNavigate();
-    const handleLogin = async () => {
+    const handleLogin: React.FormEventHandler<HTMLFormElement> = async (event) => {
+        event.preventDefault();
         try {
             const response = await fetch(`${process.env.REACT_APP_API_URL}/auth`, {
                 method: "POST",
@@ -28,16 +36,16 @@ const LoginPage: React.FC = () => {
                     password: password,
                 }),
             });
-
+            console.log("temp");
             if (!response.ok) {
                 // If the response status code is not in the 200 range (e.g., 401, 403, 500, etc.)
                 const errorData = await response.json(); // Assuming the server responds with JSON-formatted error message
                 throw new Error(errorData.error || "An unknown error occurred");
             }
-
             const data: LoginResponse = await response.json(); // Assume the server responds with the expected structure
             localStorage.setItem('authToken', data.token);
             localStorage.setItem('userData',JSON.stringify(data.user));
+            console.log("login");
             navigate("/");
         } catch (err) {
             if (err instanceof Error) {
@@ -70,10 +78,12 @@ const LoginPage: React.FC = () => {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              id="username"
+              label="User Name"
+              value={username}
+              onChange={handleUsernameChange}
+              name="username"
+              autoComplete="username"
               autoFocus
             />
             <TextField
@@ -82,6 +92,8 @@ const LoginPage: React.FC = () => {
               fullWidth
               name="password"
               label="Password"
+              value={password}
+              onChange={handlePasswordChange}
               type="password"
               id="password"
               autoComplete="current-password"
